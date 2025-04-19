@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "q+2dXqjU7ZSzwKWre22O9pyqGV36zsv6NWMpkSULiwg=",
+  "Source": "ProjectOneDemoPipeline",
+  "BasePath": "_content/ProjectOneDemoPipeline",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
