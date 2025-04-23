@@ -18,11 +18,49 @@
 #     echo See https://aka.ms/yaml
 #   displayName: 'Run a multi-line script'
 
+# trigger:
+#   - main
+
+# pool:
+#   name: Default  # or whatever agent pool you're using
+
+# variables:
+#   buildConfiguration: 'Release'
+
+# steps:
+# - task: UseDotNet@2
+#   inputs:
+#     packageType: 'sdk'
+#     version: '8.0.x'
+#     installationPath: $(Agent.ToolsDirectory)/dotnet
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'restore'
+#     projects: '**/*.csproj'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'build'
+#     projects: '**/*.csproj'
+#     arguments: '--configuration $(buildConfiguration)'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'publish'
+#     projects: '**/*.csproj'
+#     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     pathToPublish: '$(Build.ArtifactStagingDirectory)'
+#     artifactName: 'drop'
+
 trigger:
   - main
 
 pool:
-  name: Default  # or whatever agent pool you're using
+  name: Default  # self-hosted agent pool
 
 variables:
   buildConfiguration: 'Release'
@@ -51,7 +89,15 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
 
-- task: PublishBuildArtifacts@1
+# Copy published files to IIS folder
+- task: CopyFiles@2
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: 'drop'
+    SourceFolder: '$(Build.ArtifactStagingDirectory)'
+    Contents: '**'
+    TargetFolder: 'C:\\inetpub\\wwwroot\\DemoWebApp'
+
+# Optional: Restart IIS site or App Pool (if needed)
+- powershell: |
+    Restart-WebAppPool -Name "DefaultAppPool"
+  displayName: 'Restart IIS App Pool'
+  errorActionPreference: continue
