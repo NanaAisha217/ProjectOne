@@ -60,10 +60,11 @@ trigger:
   - main
 
 pool:
-  name: Default  # self-hosted agent pool
+  name: Default  # Self-hosted agent pool name
 
 variables:
   buildConfiguration: 'Release'
+  outputPath: '$(Build.ArtifactStagingDirectory)/publish'
 
 steps:
 - task: UseDotNet@2
@@ -87,17 +88,17 @@ steps:
   inputs:
     command: 'publish'
     projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration $(buildConfiguration) --output $(outputPath)'
 
-# Copy published files to IIS folder
+#  Deploy to IIS folder (overwrite existing files)
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)'
+    SourceFolder: '$(outputPath)'
     Contents: '**'
-    TargetFolder: 'C:\\inetpub\\wwwroot\\DemoWebApp'
+    TargetFolder: 'C:\inetpub\wwwroot\DemoWebApp'
+    OverWrite: true
 
-# Optional: Restart IIS site or App Pool (if needed)
-- powershell: |
-    Restart-WebAppPool -Name "DefaultAppPool"
-  displayName: 'Restart IIS App Pool'
-  errorActionPreference: continue
+# (Optional) To help with troubleshooting:
+- script: dir C:\inetpub\wwwroot\DemoWebApp
+  displayName: 'Show deployed files'
+
