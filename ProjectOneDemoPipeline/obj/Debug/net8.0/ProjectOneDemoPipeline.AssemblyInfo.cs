@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjectOneDemoPipeline")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dee7643e9e6fff80fecb6e5d0b5ee47ffa0aaaf5")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProjectOneDemoPipeline")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjectOneDemoPipeline")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

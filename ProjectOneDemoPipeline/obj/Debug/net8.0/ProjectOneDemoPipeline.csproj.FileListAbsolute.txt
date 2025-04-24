@@ -34,3 +34,4 @@ C:\Users\HP\Downloads\netframework\ProjectOneDemoPipeline\ProjectOneDemoPipeline
 C:\Users\HP\Downloads\netframework\ProjectOneDemoPipeline\ProjectOneDemoPipeline\obj\Debug\net8.0\ProjectOneDemoPipeline.pdb
 C:\Users\HP\Downloads\netframework\ProjectOneDemoPipeline\ProjectOneDemoPipeline\obj\Debug\net8.0\ProjectOneDemoPipeline.genruntimeconfig.cache
 C:\Users\HP\Downloads\netframework\ProjectOneDemoPipeline\ProjectOneDemoPipeline\obj\Debug\net8.0\ref\ProjectOneDemoPipeline.dll
+C:\Users\HP\Downloads\netframework\ProjectOneDemoPipeline\ProjectOneDemoPipeline\obj\Debug\net8.0\ProjectOneDemoPipeline.sourcelink.json
