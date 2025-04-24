@@ -151,6 +151,49 @@
 #     pathToPublish: '$(outputDir)'
 #     artifactName: 'drop'
 
+# trigger:
+#   - main
+
+# pool:
+#   name: Default
+
+# variables:
+#   buildConfiguration: 'Release'
+
+# steps:
+# - task: UseDotNet@2
+#   inputs:
+#     packageType: 'sdk'
+#     version: '8.0.x'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'restore'
+#     projects: '**/*.csproj'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'build'
+#     projects: '**/*.csproj'
+#     arguments: '--configuration $(buildConfiguration)'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'publish'
+#     projects: '**/*.csproj'
+#     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/published --self-contained false /p:UseAppHost=false'
+
+# - task: CopyFiles@2
+#   inputs:
+#     SourceFolder: '$(Build.ArtifactStagingDirectory)/published'
+#     Contents: '**'
+#     TargetFolder: 'C:\inetpub\wwwroot\DemoWebApp'
+
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     pathToPublish: '$(Build.ArtifactStagingDirectory)/published'
+#     artifactName: 'drop'
+
 trigger:
   - main
 
@@ -159,6 +202,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  deployPath: 'C:\inetpub\wwwroot\DemoWebApp'
 
 steps:
 - task: UseDotNet@2
@@ -183,11 +227,21 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/published --self-contained false /p:UseAppHost=false'
 
+# Clean the target deploy folder
+- powershell: |
+    if (Test-Path "$(deployPath)") {
+      Remove-Item -Recurse -Force "$(deployPath)\*"
+    } else {
+      New-Item -ItemType Directory -Path "$(deployPath)"
+    }
+  displayName: 'Clean IIS Deployment Folder'
+
+# Copy the published files to IIS path
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)/published'
     Contents: '**'
-    TargetFolder: 'C:\inetpub\wwwroot\DemoWebApp'
+    TargetFolder: '$(deployPath)'
 
 - task: PublishBuildArtifacts@1
   inputs:
