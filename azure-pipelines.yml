@@ -102,6 +102,55 @@
 # - script: dir C:\inetpub\wwwroot\DemoWebApp
 #   displayName: 'Show deployed files'
 
+# trigger:
+#   - main
+
+# pool:
+#   name: Default
+
+# variables:
+#   buildConfiguration: 'Release'
+#   projectPath: '**/ProjectOneDemoPipeline.csproj'
+#   outputDir: '$(Build.ArtifactStagingDirectory)/publish'
+
+# steps:
+# - task: UseDotNet@2
+#   inputs:
+#     packageType: 'sdk'
+#     version: '8.0.x'
+#     installationPath: $(Agent.ToolsDirectory)/dotnet
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'restore'
+#     projects: '$(projectPath)'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'build'
+#     projects: '$(projectPath)'
+#     arguments: '--configuration $(buildConfiguration)'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'publish'
+#     publishWebProjects: false
+#     projects: '$(projectPath)'
+#     arguments: '--configuration $(buildConfiguration) --output $(outputDir)'
+#     zipAfterPublish: false
+
+# - task: CopyFiles@2
+#   inputs:
+#     SourceFolder: '$(outputDir)'
+#     Contents: '**'
+#     TargetFolder: 'C:\\inetpub\\wwwroot\\DemoWebApp'
+#     OverWrite: true
+
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     pathToPublish: '$(outputDir)'
+#     artifactName: 'drop'
+
 trigger:
   - main
 
@@ -110,43 +159,37 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  projectPath: '**/ProjectOneDemoPipeline.csproj'
-  outputDir: '$(Build.ArtifactStagingDirectory)/publish'
 
 steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
-    installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-    projects: '$(projectPath)'
+    projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '$(projectPath)'
+    projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
-    publishWebProjects: false
-    projects: '$(projectPath)'
-    arguments: '--configuration $(buildConfiguration) --output $(outputDir)'
-    zipAfterPublish: false
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/published --self-contained false /p:UseAppHost=false'
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(outputDir)'
+    SourceFolder: '$(Build.ArtifactStagingDirectory)/published'
     Contents: '**'
-    TargetFolder: 'C:\\inetpub\\wwwroot\\DemoWebApp'
-    OverWrite: true
+    TargetFolder: 'C:\inetpub\wwwroot\DemoWebApp'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '$(outputDir)'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/published'
     artifactName: 'drop'
