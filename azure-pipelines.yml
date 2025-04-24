@@ -56,15 +56,62 @@
 #     pathToPublish: '$(Build.ArtifactStagingDirectory)'
 #     artifactName: 'drop'
 
+# trigger:
+#   - main
+
+# pool:
+#   name: Default  # Self-hosted agent pool name
+
+# variables:
+#   buildConfiguration: 'Release'
+#   outputPath: '$(Build.ArtifactStagingDirectory)/publish'
+
+# steps:
+# - task: UseDotNet@2
+#   inputs:
+#     packageType: 'sdk'
+#     version: '8.0.x'
+#     installationPath: $(Agent.ToolsDirectory)/dotnet
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'restore'
+#     projects: '**/*.csproj'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'build'
+#     projects: '**/*.csproj'
+#     arguments: '--configuration $(buildConfiguration)'
+
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'publish'
+#     projects: '**/*.csproj'
+#     arguments: '--configuration $(buildConfiguration) --output $(outputPath)'
+
+# #  Deploy to IIS folder (overwrite existing files)
+# - task: CopyFiles@2
+#   inputs:
+#     SourceFolder: '$(outputPath)'
+#     Contents: '**'
+#     TargetFolder: 'C:\inetpub\wwwroot\DemoWebApp'
+#     OverWrite: true
+
+# # (Optional) To help with troubleshooting:
+# - script: dir C:\inetpub\wwwroot\DemoWebApp
+#   displayName: 'Show deployed files'
+
 trigger:
   - main
 
 pool:
-  name: Default  # Self-hosted agent pool name
+  name: Default
 
 variables:
   buildConfiguration: 'Release'
-  outputPath: '$(Build.ArtifactStagingDirectory)/publish'
+  projectPath: '**/ProjectOneDemoPipeline.csproj'
+  outputDir: '$(Build.ArtifactStagingDirectory)/publish'
 
 steps:
 - task: UseDotNet@2
@@ -76,29 +123,30 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-    projects: '**/*.csproj'
+    projects: '$(projectPath)'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '**/*.csproj'
+    projects: '$(projectPath)'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(outputPath)'
+    publishWebProjects: false
+    projects: '$(projectPath)'
+    arguments: '--configuration $(buildConfiguration) --output $(outputDir)'
+    zipAfterPublish: false
 
-#  Deploy to IIS folder (overwrite existing files)
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(outputPath)'
+    SourceFolder: '$(outputDir)'
     Contents: '**'
-    TargetFolder: 'C:\inetpub\wwwroot\DemoWebApp'
+    TargetFolder: 'C:\\inetpub\\wwwroot\\DemoWebApp'
     OverWrite: true
 
-# (Optional) To help with troubleshooting:
-- script: dir C:\inetpub\wwwroot\DemoWebApp
-  displayName: 'Show deployed files'
-
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(outputDir)'
+    artifactName: 'drop'
